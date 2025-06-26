@@ -1,17 +1,20 @@
+import { FC } from 'react';
 import { Navigate, useLocation } from 'react-router';
+
 import { Preloader } from '../ui/preloader';
+import { useSelector } from '../../services/store';
 
 type ProtectedRouteProps = {
   onlyUnAuth?: boolean; // если true — это страница только для НЕавторизованных
   children: React.ReactElement; // то, что мы защищаем (компонент страницы), например, <Login />, <Profile /> и т.д
 };
 
-export const ProtectedRoute = ({
+export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   onlyUnAuth,
   children
-}: ProtectedRouteProps) => {
-  const isAuthChecked = true; // (в будущем будет получаться из Redux) — "проверили ли мы, авторизован ли пользователь"
-  const user = true; // (в будущем будет получаться из Redux) — сам пользователь (если null или false — не авторизован)
+}) => {
+  const isAuthChecked = useSelector((state) => state.user.isAuthChecked); // проверяем, авторизован ли пользователь
+  const user = useSelector((state) => state.user.user); // сам пользователь (если null или false — не авторизован)
   const location = useLocation(); // текущий URL, с которого зашли
 
   // пока идёт проверка авторизации

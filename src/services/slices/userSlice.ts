@@ -2,22 +2,27 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { getUserApi } from '../../utils/burger-api';
 import { TUser } from '../../utils/types';
 
-interface UserState {
-  user: TUser | null;
-  isAuthenticated: boolean;
-  isAuthChecked: boolean;
-  loading: boolean;
-  error: string | null;
+interface TUserState {
+  user: TUser | null; // xранит информацию о текущем пользователе
+  loading: boolean; // флаг загрузки при общих действиях с пользователем
+  isAuthenticated: boolean; //показывает, авторизован ли пользователь
+  isAuthChecked: boolean; // показывает, завершилась ли проверка токена
+  error: string | null; // ошибка, связанная с загрузкой данных пользователя
+  loginUserError: string | null; // специальная ошибка для входа
+  loginUserRequest: boolean; // флаг отправки запроса на вход
 }
 
-const initialState: UserState = {
+const initialState: TUserState = {
   user: null,
+  loading: false,
   isAuthenticated: false,
   isAuthChecked: false,
-  loading: false,
-  error: null
+  error: null,
+  loginUserError: null,
+  loginUserRequest: false
 };
 
+// getUser — для проверки и получения данных текущего пользователя
 export const getUser = createAsyncThunk('user/getUser', async () => {
   const response = await getUserApi();
   return response.user;
@@ -29,6 +34,9 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<TUser>) => {
       state.user = action.payload;
+      state.isAuthenticated = true;
+      state.loginUserRequest = false;
+      state.loginUserError = null;
     },
     logout: (state) => {
       state.user = null;
@@ -37,11 +45,19 @@ export const userSlice = createSlice({
     setAuthChecked: (state, action: PayloadAction<boolean>) => {
       state.isAuthChecked = action.payload;
     },
+    startLogin: (state) => {
+      state.loginUserRequest = true;
+      state.loginUserError = null;
+    },
+    loginFailed: (state, action: PayloadAction<string>) => {
+      state.loginUserRequest = false;
+      state.loginUserError = action.payload;
+    },
     clearError: (state) => {
       state.error = null;
+      state.loginUserError = null;
     }
   },
-  // блок, где обрабатываются результаты асинхронных операций, таких как createAsyncThunk
   extraReducers: (builder) => {
     builder
       .addCase(getUser.pending, (state) => {
@@ -64,3 +80,14 @@ export const userSlice = createSlice({
       });
   }
 });
+
+export const {
+  setUser,
+  logout,
+  setAuthChecked,
+  clearError,
+  startLogin,
+  loginFailed
+} = userSlice.actions;
+
+export default userSlice.reducer;
