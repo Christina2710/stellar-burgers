@@ -1,5 +1,6 @@
 import { ProfileMenuUI } from '@ui';
 import type { Meta, StoryObj } from '@storybook/react';
+import { factory } from 'typescript';
 
 const meta = {
   title: 'Example/ProfileMenu',
@@ -18,6 +19,7 @@ type Story = StoryObj<typeof meta>;
 export const DefaultProfileMenu: Story = {
   args: {
     pathname: '/profile',
-    handleLogout: () => {}
+    handleLogout: () => {},
+    isLoading: false
   }
 };

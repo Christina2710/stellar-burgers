@@ -1,12 +1,13 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Input,
   Button,
   PasswordInput
 } from '@zlden/react-developer-burger-ui-components';
-import styles from '../common.module.css';
-import { Link } from 'react-router-dom';
+
 import { RegisterUIProps } from './type';
+import styles from '../common.module.css';
 
 export const RegisterUI: FC<RegisterUIProps> = ({
   errorText,
@@ -16,7 +17,8 @@ export const RegisterUI: FC<RegisterUIProps> = ({
   password,
   setPassword,
   userName,
-  setUserName
+  setUserName,
+  isLoading
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
@@ -59,8 +61,13 @@ export const RegisterUI: FC<RegisterUIProps> = ({
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type='primary' size='medium' htmlType='submit'>
-              Зарегистрироваться
+            <Button
+              type='primary'
+              size='medium'
+              htmlType='submit'
+              disabled={isLoading}
+            >
+              {isLoading ? 'Загрузка...' : 'Зарегистрироваться'}
             </Button>
           </div>
           {errorText && (
