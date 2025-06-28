@@ -1,16 +1,19 @@
-import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 
+import { useSelector, useDispatch } from '../../services/store';
+import { setUser } from '../../services/slices/userSlice';
+import { updateUserApi } from '@api';
+
+import { ProfileUI } from '@ui-pages';
+
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useSelector((state) => state.user.user);
+  const dispatch = useDispatch();
+  const [error, setError] = useState('');
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name || '',
+    email: user?.email || '',
     password: ''
   });
 
@@ -29,13 +32,21 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    updateUserApi(formValue)
+      .then((data) => {
+        dispatch(setUser(data.user));
+      })
+      .catch((err) => {
+        const message = err.message || 'Ошибка обновления профиля';
+        setError(message);
+      });
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name || '',
+      email: user?.email || '',
       password: ''
     });
   };
@@ -48,14 +59,14 @@ export const Profile: FC = () => {
   };
 
   return (
-    <ProfileUI
-      formValue={formValue}
-      isFormChanged={isFormChanged}
-      handleCancel={handleCancel}
-      handleSubmit={handleSubmit}
-      handleInputChange={handleInputChange}
-    />
+    <>
+      <ProfileUI
+        formValue={formValue}
+        isFormChanged={isFormChanged}
+        handleCancel={handleCancel}
+        handleSubmit={handleSubmit}
+        handleInputChange={handleInputChange}
+      />
+    </>
   );
-
-  return null;
 };
