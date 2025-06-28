@@ -1,12 +1,14 @@
 import { FC, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import {
   Input,
   Button,
   PasswordInput
 } from '@zlden/react-developer-burger-ui-components';
-import styles from '../common.module.css';
-import { Link } from 'react-router-dom';
+
 import { LoginUIProps } from './type';
+import styles from '../common.module.css';
 
 export const LoginUI: FC<LoginUIProps> = ({
   email,
@@ -14,7 +16,8 @@ export const LoginUI: FC<LoginUIProps> = ({
   errorText,
   handleSubmit,
   password,
-  setPassword
+  setPassword,
+  isLoading
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
@@ -45,8 +48,13 @@ export const LoginUI: FC<LoginUIProps> = ({
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type='primary' size='medium' htmlType='submit'>
-              Войти
+            <Button
+              type='primary'
+              size='medium'
+              htmlType='submit'
+              disabled={isLoading}
+            >
+              {isLoading ? 'Загрузка...' : 'Войти'}
             </Button>
           </div>
           {errorText && (

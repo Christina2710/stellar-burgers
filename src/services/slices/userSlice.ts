@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getUserApi } from '../../utils/burger-api';
+
 import { TUser } from '../../utils/types';
+import { getUserApi } from '../../utils/burger-api';
 
 interface TUserState {
   user: TUser | null; // xранит информацию о текущем пользователе
@@ -48,27 +49,33 @@ export const userSlice = createSlice({
     startLogin: (state) => {
       state.loginUserRequest = true;
       state.loginUserError = null;
+      state.loading = true;
     },
     loginFailed: (state, action: PayloadAction<string>) => {
       state.loginUserRequest = false;
       state.loginUserError = action.payload;
+      state.loading = false;
     },
     clearError: (state) => {
       state.error = null;
       state.loginUserError = null;
+    },
+    startLoading: (state) => {
+      state.loading = true;
+    },
+    stopLoading: (state) => {
+      state.loading = false;
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(getUser.pending, (state) => {
-        state.loading = true;
         state.error = null;
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isAuthenticated = true;
         state.isAuthChecked = true;
-        state.loading = false;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.user = null;
@@ -76,7 +83,6 @@ export const userSlice = createSlice({
         state.isAuthChecked = true;
         state.error =
           action.error.message || 'Ошибка при загрузке данных пользователя';
-        state.loading = false;
       });
   }
 });
@@ -87,7 +93,9 @@ export const {
   setAuthChecked,
   clearError,
   startLogin,
-  loginFailed
+  loginFailed,
+  startLoading,
+  stopLoading
 } = userSlice.actions;
 
 export default userSlice.reducer;

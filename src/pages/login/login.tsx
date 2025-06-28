@@ -5,11 +5,12 @@ import { loginUserApi } from '@api';
 import { LoginUI } from '@ui-pages';
 
 import { setCookie } from '../../utils/cookie';
-import { useDispatch } from '../../services/store';
+import { useSelector, useDispatch } from '../../services/store';
 import {
   loginFailed,
   setUser,
-  startLogin
+  startLogin,
+  stopLoading
 } from '../../services/slices/userSlice';
 
 export const Login: FC = () => {
@@ -19,6 +20,8 @@ export const Login: FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const isLoading = useSelector((state) => state.user.loading);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -31,6 +34,7 @@ export const Login: FC = () => {
         setCookie('accessToken', data.accessToken);
         dispatch(setUser(data.user));
         navigate('/', { replace: true });
+        dispatch(stopLoading());
       })
       .catch((err) => {
         const message = err.message || 'Ошибка входа';
@@ -47,6 +51,7 @@ export const Login: FC = () => {
       password={password}
       setPassword={setPassword}
       handleSubmit={handleSubmit}
+      isLoading={isLoading}
     />
   );
 };

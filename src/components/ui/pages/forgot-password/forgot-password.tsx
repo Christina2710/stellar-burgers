@@ -1,15 +1,17 @@
 import { FC } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Input, Button } from '@zlden/react-developer-burger-ui-components';
-import styles from '../common.module.css';
-import { Link } from 'react-router-dom';
+
 import { PageUIProps } from '../common-type';
+import styles from '../common.module.css';
 
 export const ForgotPasswordUI: FC<PageUIProps> = ({
   errorText,
   email,
   setEmail,
-  handleSubmit
+  handleSubmit,
+  isLoading
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
@@ -32,8 +34,13 @@ export const ForgotPasswordUI: FC<PageUIProps> = ({
           />
         </div>
         <div className={`pb-6 ${styles.button}`}>
-          <Button type='primary' size='medium' htmlType='submit'>
-            Восстановить
+          <Button
+            type='primary'
+            size='medium'
+            htmlType='submit'
+            disabled={isLoading}
+          >
+            {isLoading ? 'Загрузка...' : 'Восстановить'}
           </Button>
         </div>
         {errorText && (
