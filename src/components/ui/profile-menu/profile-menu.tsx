@@ -5,7 +5,8 @@ import { ProfileMenuUIProps } from './type';
 
 export const ProfileMenuUI: FC<ProfileMenuUIProps> = ({
   pathname,
-  handleLogout
+  handleLogout,
+  isLoading
 }) => (
   <>
     <NavLink
@@ -32,8 +33,9 @@ export const ProfileMenuUI: FC<ProfileMenuUIProps> = ({
     <button
       className={`text text_type_main-medium text_color_inactive pt-4 pb-4 ${styles.button}`}
       onClick={handleLogout}
+      disabled={isLoading}
     >
-      Выход
+      {isLoading ? 'Выход...' : 'Выход'}
     </button>
     <p className='pt-20 text text_type_main-default text_color_inactive'>
       {pathname === '/profile'
