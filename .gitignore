@@ -3,4 +3,4 @@ node_modules
 .idea
 dist
 storybook-static/
-
+coverage/
