@@ -9,7 +9,7 @@ type TOrderState = {
   error: string | null;
 };
 
-const initialState: TOrderState = {
+export const initialState: TOrderState = {
   order: null,
   orderRequest: false,
   orderModalData: null,
@@ -53,10 +53,18 @@ export const orderSlice = createSlice({
       })
       .addCase(sendOrder.rejected, (state, action) => {
         state.orderRequest = false;
-        state.error = action.payload as string;
+        state.error = action.error.message || 'Ошибка при создании заказа';
       })
       .addCase(getOrderByNumber.fulfilled, (state, action) => {
         state.orderModalData = action.payload;
+      })
+      .addCase(getOrderByNumber.pending, (state) => {
+        state.orderRequest = true;
+        state.error = null;
+      })
+      .addCase(getOrderByNumber.rejected, (state, action) => {
+        state.orderRequest = false;
+        state.error = action.error.message || 'Ошибка при загрузке заказа';
       });
   }
 });
