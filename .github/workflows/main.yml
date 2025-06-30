@@ -1,0 +1,72 @@
+name: Сборка и деплой на GitHub Pages
+
+on:
+  push:
+    branches: [main, review]
+  pull_request:
+    branches: [main, review]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Клонировать репозиторий
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Установить Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: 📦 Установить зависимости
+        run: npm ci
+      
+      - name: 📄 Создать .env из .env.example
+        run: cp .env.example .env
+      
+      - name: 📚 Сборка Storybook
+        run: npm run build-storybook
+
+      - name: 🎨 Проверка линтером
+        run: npm run lint
+
+      - name: 🧪 Запуск юнит-тестов (Jest)
+        run: npm run test:jest
+
+      - name: 🚀 Запуск e2e-тестов (Cypress)
+        run: npm run test:cypress
+
+      - name: 🛠 Сборка production-бандла
+        run: npm run build
+
+      - name: 📤 Загрузка артефактов для GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: ⚙️ Настройка GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: 🚀 Деплой на GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
