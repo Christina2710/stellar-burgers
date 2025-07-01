@@ -1,37 +1,38 @@
-/// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+export const SELECTORS = {
+  modal: '[data-cy="modal"]',
+  modalClose: '[data-cy="modal-close"]',
+  modalOverlay: '[data-cy="modal-overlay"]',
+  burgerConstructor: '[data-cy="burger-constructor"]'
+};
+
+Cypress.Commands.add('addIngredient', (ingredientName) => {
+  cy.contains(ingredientName).parent().as('ingredientCard'); // сохраняем элемент в alias
+
+  cy.get('@ingredientCard').contains('Добавить').click();
+});
+
+Cypress.Commands.add('addIngredients', (ingredients) => {
+  ingredients.forEach((ingredient) => {
+    cy.addIngredient(ingredient);
+  });
+});
+
+Cypress.Commands.add('openIngredientModal', (ingredientName) => {
+  cy.contains(ingredientName).as('ingredient').click();
+
+  cy.get(SELECTORS.modal).should('exist');
+});
+
+Cypress.Commands.add('closeModal', () => {
+  cy.get(SELECTORS.modalClose).click();
+  cy.get(SELECTORS.modal).should('not.exist');
+});
+
+Cypress.Commands.add('mockLogin', () => {
+  window.localStorage.setItem('refreshToken', 'mockTestRefreshToken');
+  cy.setCookie('accessToken', 'mockTestAccessToken');
+});
+
+Cypress.Commands.add('shouldContainInConstructor', (ingredientName) => {
+  cy.get(SELECTORS.burgerConstructor).should('contain', ingredientName);
+});
