@@ -57,6 +57,7 @@ export const orderSlice = createSlice({
       })
       .addCase(getOrderByNumber.fulfilled, (state, action) => {
         state.orderModalData = action.payload;
+        state.orderRequest = false;
       })
       .addCase(getOrderByNumber.pending, (state) => {
         state.orderRequest = true;
