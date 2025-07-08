@@ -13,7 +13,7 @@ interface TUserState {
   loginUserRequest: boolean; // флаг отправки запроса на вход
 }
 
-const initialState: TUserState = {
+export const initialState: TUserState = {
   user: null,
   loading: false,
   isAuthenticated: false,

@@ -35,20 +35,15 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getIngredients());
-    dispatch(getUser());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getIngredients());
     const accessToken = getCookie('accessToken');
     if (accessToken) {
       dispatch(getUser());
     } else {
-      dispatch(setAuthChecked(true)); // авторизация не требуется
+      dispatch(setAuthChecked(true));
     }
   }, [dispatch]);
 
-  // Сохраняем предыдущий location для фоновой страницы
+  // сохраняем background-страницу для модалок
   const background = location.state?.background;
 
   return (
@@ -60,7 +55,8 @@ const App = () => {
         <Route path='*' element={<NotFound404 />} />
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
-
+        <Route path='/feed/:number' element={<OrderInfo />} />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route
           path='/login'
           element={
@@ -109,9 +105,17 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute>
+              <OrderInfo />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
-      {/* Модальные рендерятся поверх фоновой страницы при наличии background */}
+      {/* Модальные окна — только если есть background */}
       {background && (
         <Routes>
           <Route
